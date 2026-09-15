@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://63.187.43.210:5000
+    #image: employee-frontend:1.0
+    container_name: frontend
+    ports:
+      - "80:80"
+       
+  backend:
+    build: ./backend
+    #image: employee-backend:1.0
+    container_name: backend
+    ports:
+      - "5000:5000"
+    environment: 
+      PORT: 5000
+      APP_NAME: Employee Management API      
+      APP_ENV: development

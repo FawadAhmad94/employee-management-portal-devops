@@ -1,0 +1,74 @@
+[ 
+  { 
+    "id": 1, 
+    "name": "Ali Khan", 
+    "email": "ali.khan@example.com", 
+    "department": "Engineering", 
+    "role": "DevOps Engineer", 
+    "location": "Islamabad", 
+    "experience": 3 
+  }, 
+  { 
+    "id": 2, 
+    "name": "Sara Ahmed", 
+    "email": "sara.ahmed@example.com", 
+    "department": "Finance", 
+    "role": "Financial Analyst", 
+    "location": "Lahore", 
+    "experience": 4 
+  }, 
+  { 
+    "id": 3, 
+    "name": "Usman Raza", 
+    "email": "usman.raza@example.com", 
+    "department": "Engineering", 
+    "role": "Backend Developer", 
+    "location": "Karachi", 
+    "experience": 2 
+  }, 
+  { 
+    "id": 4, 
+    "name": "Ayesha Malik", 
+    "email": "ayesha.malik@example.com", 
+    "department": "Human Resources", 
+    "role": "HR Manager", 
+    "location": "Islamabad", 
+    "experience": 6 
+  }, 
+  { 
+    "id": 5, 
+    "name": "Hamza Tariq", 
+    "email": "hamza.tariq@example.com", 
+    "department": "Marketing", 
+    "role": "Marketing Specialist", 
+    "location": "Rawalpindi", 
+    "experience": 3 
+  }, 
+  { 
+    "id": 6, 
+    "name": "Hina Shah", 
+    "email": "hina.shah@example.com", 
+    "department": "Engineering", 
+    "role": "Frontend Developer", 
+    "location": "Lahore", 
+    "experience": 2 
+  }, 
+  { 
+    "id": 7, 
+    "name": "Bilal Ahmed", 
+    "email": "bilal.ahmed@example.com", 
+    "department": "Operations", 
+    "role": "Operations Manager", 
+    "location": "Karachi", 
+    "experience": 7 
+  }, 
+  { 
+    "id": 8, 
+    "name": "Maham Iqbal", 
+    "email": "maham.iqbal@example.com", 
+    "department": "Finance", 
+    "role": "Accountant", 
+    "location": "Islamabad", 
+    "experience": 4 
+  } 
+]
