@@ -1,0 +1,7 @@
+aws_region      = "eu-central-1"
+ami_id          = "ami-042dc8681de073ac4"
+instance_type   = "t3.micro"
+public_key_path = "~/.ssh/capstoneProject-key.pub"
+access_ip_cidr  = "0.0.0.0/0"
+project_name    = "Monitoring"
+key_name        = "capstoneProject-key"

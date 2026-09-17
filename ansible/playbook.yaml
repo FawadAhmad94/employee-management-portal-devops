@@ -1,0 +1,227 @@
+---
+- name: Install cadvisor
+  hosts: application
+  become: true
+
+  tasks:
+    - name: update apt cache
+      apt:
+        update_cache: true
+
+    - name: Check if cadvisor container already exist
+      command: docker ps -a --filter "name=cadvisor" --format "{{ '{{'}}.Names{{'}}'}}"
+      register: cadvisor_container
+      changed_when: false
+
+    - name: Run cadvisor
+      command: >
+        docker run -d 
+        --name=cadvisor
+        --restart unless-stopped
+        -p 8081:8080
+        --volume=/:/rootfs:ro
+        --volume=/var/run:/var/run:ro
+        --volume=/sys:/sys:ro
+        --volume=/var/lib/docker:/var/lib/docker:ro
+        --volume=/dev/disk/:/dev/disk/:ro
+        gcr.io/cadvisor/cadvisor:latest
+      when: "'cadvisor' not in cadvisor_container.stdout"
+
+
+- name: Install and configure Node Exporter
+  hosts: application
+  become: true
+
+  tasks:
+
+    - name: Create node_exporter user
+      user:
+        name: node_exporter
+        system: true
+        shell: /usr/sbin/nologin
+        create_home: false
+
+    - name: Download Node Exporter
+      get_url:
+        url: https://github.com/prometheus/node_exporter/releases/download/v1.10.2/node_exporter-1.10.2.linux-amd64.tar.gz
+        dest: /tmp/node_exporter.tar.gz
+        mode: "0644"
+
+    - name: Extract Node Exporter
+      unarchive:
+        src: /tmp/node_exporter.tar.gz
+        dest: /tmp/
+        remote_src: true
+
+    - name: Install Node Exporter binary
+      copy:
+        src: /tmp/node_exporter-1.10.2.linux-amd64/node_exporter
+        dest: /usr/local/bin/node_exporter
+        owner: node_exporter
+        group: node_exporter
+        mode: "0755"
+      notify: Restart Node Exporter
+
+    - name: Create Node Exporter systemd service
+      copy:
+        dest: /etc/systemd/system/node_exporter.service
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          [Unit]
+          Description=Prometheus Node Exporter
+          Wants=network-online.target
+          After=network-online.target
+
+          [Service]
+          User=node_exporter
+          Group=node_exporter
+          ExecStart=/usr/local/bin/node_exporter
+
+          [Install]
+          WantedBy=multi-user.target
+      notify:
+        - Reload systemd
+        - Restart Node Exporter
+
+    - name: Ensure Node Exporter is running
+      systemd:
+        name: node_exporter
+        state: started
+
+    - name: Enable Node Exporter at boot
+      systemd:
+        name: node_exporter
+        enabled: true
+
+  handlers:
+
+    - name: Reload systemd
+      systemd:
+        daemon_reload: true
+
+    - name: Restart Node Exporter
+      systemd:
+        name: node_exporter
+        state: restarted
+
+- name: Install Prometheus
+  hosts: prometheus
+  become: true
+
+  tasks:
+    - name: update apt cache
+      apt:
+        update_cache: true
+
+    - name: install Prometheus
+      apt:
+        name: prometheus
+        state: present
+
+    - name: Configure Prometheus
+      copy:
+        dest: /etc/prometheus/prometheus.yml
+        owner: prometheus
+        group: prometheus
+        mode: "0644"
+        content: |
+          global:
+            scrape_interval: 15s
+
+          scrape_configs:
+            - job_name: "prometheus"
+              static_configs:
+                - targets: ["localhost:9090"]
+                  labels:
+                    app: "prometheus"  
+
+            - job_name: "node_exporter"
+              static_configs:
+                - targets: ["172.31.46.29:9100"]
+                  labels:
+                    app: "node_exporter" 
+
+            - job_name: "cadvisor"
+              static_configs:
+                - targets: ["172.31.46.29:8081"]
+                  labels: 
+                    app: "cadvisor"    
+
+            - job_name: "ksm"
+              static_configs:
+                - targets: ["172.31.46.29:30090"]    
+                  labels: 
+                    app: "ksm"  
+      notify: Restart Prometheus
+
+    - name: Start Prometheus
+      service:
+        name: prometheus
+        state: started
+
+    - name: Enable Prometheus at boot
+      service:
+        name: prometheus
+        enabled: true
+  handlers:
+    - name: Restart Prometheus
+      service:
+        name: prometheus
+        state: restarted  
+
+- name: Install Grafana
+  hosts: grafana
+  become: true
+
+  tasks:
+    - name: Install prerequisite packages
+      apt:
+        name:
+          - apt-transport-https
+          - wget
+          - gnupg
+        state: present
+        update_cache: true
+
+    - name: Create APT keyrings directory
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: "0755"
+
+    - name: Download Grafana GPG keyrings
+      get_url:
+        url: https://apt.grafana.com/gpg-full.key
+        dest: /etc/apt/keyrings/grafana.asc
+        mode: "0644"
+
+    - name: Add Grafana APT repository
+      apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/grafana.asc] https://apt.grafana.com stable main"
+        filename: grafana
+        state: present
+
+    - name: Update apt cache
+      apt:
+        update_cache: true
+
+    - name: Install Grafana
+      apt:
+        name: grafana
+        state: present
+
+    - name: Start Grafana
+      service:
+        name: grafana-server
+        state: started
+
+    - name: Enable Grafana at boot
+      service:
+        name: grafana-server
+        enabled: true            
+
+
+    
+
