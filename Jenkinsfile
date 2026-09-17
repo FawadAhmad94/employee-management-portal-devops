@@ -8,7 +8,7 @@ pipeline {
     }
 
     stages {
-        stage ("CLONE REPOSITORY"){
+        stage ("CLONE REPO"){
             steps {
                 git branch: "main",url: "https://github.com/FawadAhmad94/employee-management-portal-devops.git"
             }
