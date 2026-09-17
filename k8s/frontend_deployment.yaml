@@ -20,7 +20,7 @@ spec:
       containers:
       - name: frontend
 
-        image: new-frontend:1.0 
+        image: fawadahmad94/employee-frontend:1.0 
         imagePullPolicy: IfNotPresent 
         ports:
         - containerPort: 80
