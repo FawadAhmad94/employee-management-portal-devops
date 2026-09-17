@@ -23,7 +23,7 @@ pipeline {
         stage ("BUILD_FRONTEND_IMAGE") {
             steps {
                 sh '''
-                docker build --build-arg VITE_API_URL=http://3.79.31.69:5000 -t $FRONTEND_IMAGE:$IMAGE_TAG ./frontend
+                docker build --build-arg VITE_API_URL=http://3.79.14.126:5000 -t $FRONTEND_IMAGE:$IMAGE_TAG ./frontend
                 '''
             }
         }
