@@ -65,6 +65,11 @@ pipeline {
         stage ("KUBERNETES_DEPLOYMENT"){
             steps {
                 sh '''
+		kubectl apply -f k8s/namespace.yaml
+
+		#this will create namespace first then all the other commands runs smoothly
+                #as kubectl is idempotent runnin again namespace won't hurt
+                
                 kubectl apply -f k8s/
 
                 #kubectl set image deployment/DEPLOYMENT_NAME CONTAINER_NAME=NEW_IMAGE 
