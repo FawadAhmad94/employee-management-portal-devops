@@ -127,5 +127,16 @@ pipeline {
             }
         }
     }
+	   post {
+	 	success {
+	 		echo "Pipeline runs successfully"
+            }
+	 	failure {
+	 		 echo "Pipeline failed"
+            }
+	 	always {
+	 		echo "Always show"
+            }
+        }
 
 }
